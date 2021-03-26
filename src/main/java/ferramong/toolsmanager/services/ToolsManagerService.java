@@ -21,6 +21,6 @@ public class ToolsManagerService {
             return emptyList();
         }
 
-        return toolsRepository.findToolsByNameAndAssociatedDweller(filter.getToolName(), filter.getDwellerName());
+        return toolsRepository.findByNameStartingWith(filter.getToolName());
     }
 }

@@ -10,7 +10,9 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "tools")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Tool {
 
@@ -27,16 +29,15 @@ public class Tool {
     private String description;
     @Column(name = "instructions", length = 4096)
     private String instructions;
+    @Column(name = "price")
+    private double price;
 
     @Column(name = "available_from")
     private LocalDate availableFrom;
     @Column(name = "available_until")
     private LocalDate availableUntil;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private Dweller owner;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "renter_id", referencedColumnName = "id")
-    private Dweller renter;
 }
