@@ -33,10 +33,10 @@ public class ToolsManagerController {
             @NotBlank
                     String toolName
     ) {
-        var filter = ToolsListFilter.builder()
-                .toolName(toolName)
-                .build();
-
-        return toolsManagerService.listTools(filter);
+        return toolsManagerService.listTools(
+                ToolsListFilter.builder()
+                        .toolName(toolName)
+                        .build()
+        );
     }
 }
