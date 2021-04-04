@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    hibernate.ddl-auto: update
+    open-in-view: false
+
+springdoc:
+  api-docs.enabled: true
+  swagger-ui.path: "/swagger-ui"
+
+logging.level:
+  org.hibernate.SQL: DEBUG
+
+ferramong:
+  tools-manager.base-url: "https://ferramong-tools-manager.herokuapp.com"
+  scheduler.base-url: "https://ferramong-scheduler.herokuapp.com"

@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: "jdbc:h2:mem:testdb"
+    username: "sa"
+    password: ""
+    platform: "h2"
+  jpa:
+    hibernate.ddl-auto: "update"
+    open-in-view: false
+  h2:
+    console.enabled: true
+
+server:
+  port: 8081
+
+springdoc:
+  api-docs.enabled: true
+  swagger-ui.path: "/swagger-ui"
+
+logging.level:
+  org.hibernate.SQL: "DEBUG"
+  org.hibernate.type.descriptor.sql.BasicBinder: "TRACE"
+
+ferramong:
+  tools-manager.base-url: "http://localhost:8081"
+  scheduler.base-url: "https://ferramong-scheduler.herokuapp.com"
