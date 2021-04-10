@@ -1,14 +1,14 @@
 spring:
   jpa:
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: "update"
     open-in-view: false
 
 springdoc:
   api-docs.enabled: true
-  swagger-ui.path: "/swagger-ui"
+  swagger-ui.path: "/"
 
 logging.level:
-  org.hibernate.SQL: DEBUG
+  org.hibernate.SQL: "DEBUG"
 
 ferramong:
   tools-manager.base-url: "https://ferramong-tools-manager.herokuapp.com"
