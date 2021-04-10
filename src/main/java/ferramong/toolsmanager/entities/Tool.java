@@ -17,9 +17,9 @@ import java.time.LocalDate;
 public class Tool {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "name", length = 512, nullable = false)
     private String name;
@@ -37,7 +37,6 @@ public class Tool {
     @Column(name = "available_until")
     private LocalDate availableUntil;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
-    private Dweller owner;
+    @Column(name = "owner_id")
+    private int ownerId;
 }
