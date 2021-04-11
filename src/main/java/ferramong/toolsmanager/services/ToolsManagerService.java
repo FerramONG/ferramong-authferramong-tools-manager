@@ -49,6 +49,6 @@ public class ToolsManagerService {
 
     @Transactional
     public List<Tool> deleteAllTools(int dwellerId) {
-        return toolsRepository.deleteByOwnerId(dwellerId);
+        return toolsRepository.deleteAllByOwnerId(dwellerId);
     }
 }

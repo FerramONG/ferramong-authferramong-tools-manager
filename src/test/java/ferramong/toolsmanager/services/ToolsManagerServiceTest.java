@@ -155,8 +155,8 @@ public class ToolsManagerServiceTest {
         @BeforeEach void setUp() {
             toolEntities = ToolEntityHelper.buildList();
 
-            when(repository.deleteByOwnerId(anyInt())).thenReturn(List.of());
-            when(repository.deleteByOwnerId(EXISTING_DWELLER_ID)).thenReturn(toolEntities);
+            when(repository.deleteAllByOwnerId(anyInt())).thenReturn(List.of());
+            when(repository.deleteAllByOwnerId(EXISTING_DWELLER_ID)).thenReturn(toolEntities);
         }
 
         @Test void whenDwellerOwnsTools() {

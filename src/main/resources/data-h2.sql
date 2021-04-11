@@ -1,12 +1,7 @@
--- Initialize Dwellers
+-- Initialize Tools
 set @john_doe = 1;
 set @jane_doe = 2;
 
-insert into dwellers (id, name, cpf) values
-    (@john_doe, 'John Doe', '000-000-000.00'),
-    (@jane_doe, 'Jane Doe', '000-000-000.00');
-
--- Initialize Tools
 set @category = 'All';
 set @description = 'What is this tool for?';
 set @instructions = 'How to use this tool?';
