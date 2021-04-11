@@ -1,26 +1,54 @@
 package ferramong.toolsmanager.services;
 
 import ferramong.toolsmanager.entities.Tool;
-import ferramong.toolsmanager.models.ToolsListFilter;
+import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.repositories.ToolsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-
-import static java.util.Collections.emptyList;
 
 @Service
 @AllArgsConstructor
 public class ToolsManagerService {
-
     private final ToolsRepository toolsRepository;
 
-    public List<Tool> listTools(ToolsListFilter filter) {
-        if (filter == null) {
-            return emptyList();
+    public Tool getTool(int toolId, int dwellerId) throws ToolNotFoundException {
+        return toolsRepository.findByIdAndOwnerId(toolId, dwellerId)
+                .orElseThrow(() -> new ToolNotFoundException(toolId));
+    }
+
+    public List<Tool> getAllTools(int dwellerId) {
+        return toolsRepository.findAllByOwnerId(dwellerId);
+    }
+
+    @Transactional
+    public Tool createTool(@NotNull Tool tool) {
+        // TODO: Validate dwellerId.
+        tool.setId(null);
+        return toolsRepository.save(tool);
+    }
+
+    @Transactional
+    public Tool updateTool(@NotNull Tool tool) throws ToolNotFoundException {
+        var toolToUpdate = toolsRepository.findByIdAndOwnerId(tool.getId(), tool.getOwnerId());
+        if (toolToUpdate.isPresent()) {
+            return toolsRepository.save(tool);
         }
 
-        return toolsRepository.findByNameStartingWith(filter.getToolName());
+        throw new ToolNotFoundException(tool.getId());
+    }
+
+    @Transactional
+    public Tool deleteTool(int toolId, int dwellerId) throws ToolNotFoundException {
+        var deletedTool = toolsRepository.deleteByIdAndOwnerId(toolId, dwellerId);
+        return deletedTool.orElseThrow(() -> new ToolNotFoundException(toolId));
+    }
+
+    @Transactional
+    public List<Tool> deleteAllTools(int dwellerId) {
+        return toolsRepository.deleteByOwnerId(dwellerId);
     }
 }
