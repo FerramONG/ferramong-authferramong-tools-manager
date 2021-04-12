@@ -3,6 +3,9 @@ spring:
     hibernate.ddl-auto: "update"
     open-in-view: false
 
+server:
+  error.include-stacktrace: "never"
+
 springdoc:
   api-docs.enabled: true
   swagger-ui.path: "/"
