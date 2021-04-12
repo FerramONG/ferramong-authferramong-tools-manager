@@ -21,15 +21,14 @@ public class Rental {
     @Column(name = "id")
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "renter_id", referencedColumnName = "id")
-    private Dweller renter;
+    @Column(name = "renter_id")
+    private int renterId;
     @OneToOne
     @JoinColumn(name = "tool_id", referencedColumnName = "id")
     private Tool tool;
 
-    @Column(name = "rentFrom")
+    @Column(name = "rent_from")
     private LocalDate rentFrom;
-    @Column(name = "rentUntil")
+    @Column(name = "rent_until")
     private LocalDate rentUntil;
 }
