@@ -1,4 +1,4 @@
-package ferramong.toolsmanager.config;
+package ferramong.toolsmanager.config.services;
 
 import ferramong.toolsmanager.repositories.ToolsRepository;
 import ferramong.toolsmanager.services.ToolsManagerService;

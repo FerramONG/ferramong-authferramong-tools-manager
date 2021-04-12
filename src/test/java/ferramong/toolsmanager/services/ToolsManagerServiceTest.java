@@ -1,6 +1,6 @@
 package ferramong.toolsmanager.services;
 
-import ferramong.toolsmanager.config.ToolsManagerServiceTestConfig;
+import ferramong.toolsmanager.config.services.ToolsManagerServiceTestConfig;
 import ferramong.toolsmanager.entities.Tool;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.helpers.ToolEntityHelper;

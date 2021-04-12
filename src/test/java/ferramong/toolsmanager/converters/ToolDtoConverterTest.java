@@ -9,17 +9,16 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ToolDtoConverterTest {
-    private ferramong.toolsmanager.entities.Tool toolEntity;
 
-    @Nested class ShouldReturnNull {
-        @Test void whenToolEntityIsNull() {
-            assertThat(ToolDtoConverter.from(null)).isNull();
-        }
-    }
+    @Nested class FromToolDto {
+        private ferramong.toolsmanager.entities.Tool toolEntity;
 
-    @Nested class ShouldMapFieldsFromSource {
         @BeforeEach void setUp() {
             toolEntity = ToolEntityHelper.buildOne();
+        }
+
+        @Test void whenToolEntityIsNull() {
+            assertThat(ToolDtoConverter.from(null)).isNull();
         }
 
         @Test void whenToolEntityHasValues() {
@@ -36,7 +35,7 @@ public class ToolDtoConverterTest {
                     .build();
 
             assertThat(ToolDtoConverter.from(toolEntity))
-                    .isExactlyInstanceOf(ferramong.toolsmanager.dto.Tool.class)
+                    .isExactlyInstanceOf(Tool.class)
                     .usingRecursiveComparison()
                     .isEqualTo(expectedToolDto);
         }
