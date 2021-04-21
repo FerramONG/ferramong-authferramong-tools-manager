@@ -1,6 +1,8 @@
 package ferramong.toolsmanager.config;
 
 import ferramong.toolsmanager.dto.ErrorResponse;
+import ferramong.toolsmanager.exceptions.RentalNotFoundException;
+import ferramong.toolsmanager.exceptions.ToolNotAvailableException;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,7 +24,7 @@ public class GlobalExceptionHandler {
 
     // TODO: Enhance error message returned as response body for the client.
 
-    @ExceptionHandler(ToolNotFoundException.class)
+    @ExceptionHandler({ToolNotFoundException.class, ToolNotAvailableException.class, RentalNotFoundException.class})
     public ResponseEntity<ErrorResponse> notFound(Exception exception) {
         var responseBody = ErrorResponse.builder()
                 .message(exception.getMessage())
