@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class ToolsManagerService {
+public class ToolsService {
     private final ToolsRepository toolsRepository;
 
     public Tool getTool(int toolId, int dwellerId) throws ToolNotFoundException {
@@ -43,8 +43,15 @@ public class ToolsManagerService {
 
     @Transactional
     public Tool deleteTool(int toolId, int dwellerId) throws ToolNotFoundException {
-        var deletedTool = toolsRepository.deleteByIdAndOwnerId(toolId, dwellerId);
-        return deletedTool.orElseThrow(() -> new ToolNotFoundException(toolId));
+        var toolToDeleteEntity = toolsRepository.findByIdAndOwnerId(toolId, dwellerId);
+        if (toolToDeleteEntity.isPresent()) {
+            var toolToDelete = toolToDeleteEntity.get();
+            toolsRepository.delete(toolToDelete);
+
+            return toolToDelete;
+        }
+
+        throw new ToolNotFoundException(toolId);
     }
 
     @Transactional

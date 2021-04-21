@@ -2,12 +2,11 @@ package ferramong.toolsmanager.controllers;
 
 import ferramong.toolsmanager.config.controllers.ToolsManagerControllerTestConfig;
 import ferramong.toolsmanager.converters.ToolDtoConverter;
-import ferramong.toolsmanager.dto.DeletedToolResponse;
 import ferramong.toolsmanager.dto.Tool;
-import ferramong.toolsmanager.dto.ToolsManagerRequest;
+import ferramong.toolsmanager.dto.ToolsRequest;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.helpers.ToolEntityHelper;
-import ferramong.toolsmanager.services.ToolsManagerService;
+import ferramong.toolsmanager.services.ToolsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,11 +26,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ToolsManagerController.class)
+@WebMvcTest(ToolsController.class)
 @Import(ToolsManagerControllerTestConfig.class)
-public class ToolsManagerControllerBehaviorTest {
-    @Autowired private ToolsManagerController controller;
-    @Autowired private ToolsManagerService service;
+public class ToolsControllerBehaviorTest {
+    @Autowired private ToolsController controller;
+    @Autowired private ToolsService service;
     @Autowired private MockMvc mockMvc;
 
     @Nested class GetDwellerTools {
@@ -97,7 +96,7 @@ public class ToolsManagerControllerBehaviorTest {
     }
 
     @Nested class CreateTool {
-        private ToolsManagerRequest requestBody;
+        private ToolsRequest requestBody;
         private Tool responseBody;
         private ferramong.toolsmanager.entities.Tool toolEntity;
 
@@ -105,7 +104,7 @@ public class ToolsManagerControllerBehaviorTest {
             toolEntity = ToolEntityHelper.buildOne();
 
             responseBody = ToolDtoConverter.from(toolEntity);
-            requestBody = ToolsManagerRequest.builder()
+            requestBody = ToolsRequest.builder()
                     .name(toolEntity.getName())
                     .category(toolEntity.getCategory())
                     .description(toolEntity.getDescription())
@@ -124,7 +123,7 @@ public class ToolsManagerControllerBehaviorTest {
                             .header("dwellerId", responseBody.getOwnerId())
                             .contentType(APPLICATION_JSON_VALUE)
                             .content(toJson(requestBody)))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(content().json(toJson(responseBody)));
         }
 
@@ -134,7 +133,7 @@ public class ToolsManagerControllerBehaviorTest {
     }
 
     @Nested class UpdateTool {
-        private ToolsManagerRequest requestBody;
+        private ToolsRequest requestBody;
         private Tool responseBody;
         private ferramong.toolsmanager.entities.Tool toolEntity;
 
@@ -142,7 +141,7 @@ public class ToolsManagerControllerBehaviorTest {
             toolEntity = ToolEntityHelper.buildOne();
 
             responseBody = ToolDtoConverter.from(toolEntity);
-            requestBody = ToolsManagerRequest.builder()
+            requestBody = ToolsRequest.builder()
                     .name(toolEntity.getName())
                     .category(toolEntity.getCategory())
                     .description(toolEntity.getDescription())
@@ -180,13 +179,16 @@ public class ToolsManagerControllerBehaviorTest {
     }
 
     @Nested class DeleteAllTools {
-        private List<DeletedToolResponse> responseBody;
+        private List<Tool> responseBody;
         private List<ferramong.toolsmanager.entities.Tool> toolEntities;
 
         @BeforeEach void setUp() {
             toolEntities = ToolEntityHelper.buildList();
             responseBody = toolEntities.stream()
-                    .map(it -> new DeletedToolResponse(it.getId()))
+                    .map(it -> Tool.builder()
+                            .id(it.getId())
+                            .name(it.getName())
+                            .build())
                     .collect(Collectors.toList());
 
             final var ownerId = toolEntities.get(0).getOwnerId();

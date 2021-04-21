@@ -1,7 +1,7 @@
 package ferramong.toolsmanager.config.services;
 
 import ferramong.toolsmanager.repositories.ToolsRepository;
-import ferramong.toolsmanager.services.ToolsManagerService;
+import ferramong.toolsmanager.services.ToolsService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ public class ToolsManagerServiceTestConfig {
     @MockBean private ToolsRepository toolsRepository;
 
     @Bean
-    public ToolsManagerService toolsManagerService() {
-        return new ToolsManagerService(toolsRepository);
+    public ToolsService toolsManagerService() {
+        return new ToolsService(toolsRepository);
     }
 }

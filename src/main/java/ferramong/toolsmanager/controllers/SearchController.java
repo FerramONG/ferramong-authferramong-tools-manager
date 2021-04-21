@@ -3,7 +3,7 @@ package ferramong.toolsmanager.controllers;
 import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.Tool;
 import ferramong.toolsmanager.models.ToolsListFilter;
-import ferramong.toolsmanager.services.ToolsSearchService;
+import ferramong.toolsmanager.services.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
 )
 @AllArgsConstructor
-@Tag(name = "Tools Search API")
-public class ToolsSearchController {
+@Tag(name = "Search")
+public class SearchController {
 
-    private final ToolsSearchService toolsSearchService;
+    private final SearchService searchService;
 
     @Operation(summary = "Search tools by name.")
     @ApiResponses({
@@ -41,7 +41,7 @@ public class ToolsSearchController {
             @NotBlank
                     String toolName
     ) {
-        var tools = toolsSearchService.listTools(
+        var tools = searchService.listTools(
                 ToolsListFilter.builder()
                         .toolName(toolName)
                         .build()

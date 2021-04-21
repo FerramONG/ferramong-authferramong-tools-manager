@@ -1,7 +1,7 @@
 package ferramong.toolsmanager.controllers;
 
 import ferramong.toolsmanager.config.controllers.ToolsManagerControllerTestConfig;
-import ferramong.toolsmanager.dto.ToolsManagerRequest;
+import ferramong.toolsmanager.dto.ToolsRequest;
 import ferramong.toolsmanager.helpers.JsonHelper;
 import ferramong.toolsmanager.helpers.ToolsManagerRequestHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,10 +17,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ToolsManagerController.class)
+@WebMvcTest(ToolsController.class)
 @Import(ToolsManagerControllerTestConfig.class)
-public class ToolsManagerControllerParametersTest {
-    @Autowired private ToolsManagerController controller;
+public class ToolsControllerParametersTest {
+    @Autowired private ToolsController controller;
     @Autowired private MockMvc mockMvc;
 
     @Nested class GetDwellerTools {
@@ -73,7 +73,7 @@ public class ToolsManagerControllerParametersTest {
     }
 
     @Nested class CreateTool {
-        private ToolsManagerRequest requestBody;
+        private ToolsRequest requestBody;
 
         @BeforeEach void setUp() {
             requestBody = ToolsManagerRequestHelper.buildOne();
@@ -129,12 +129,12 @@ public class ToolsManagerControllerParametersTest {
                             .header("dwellerId", 1)
                             .contentType(APPLICATION_JSON_VALUE)
                             .content(JsonHelper.toJson(requestBody)))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isCreated());
         }
     }
 
     @Nested class UpdateTool {
-        private ToolsManagerRequest requestBody;
+        private ToolsRequest requestBody;
 
         @BeforeEach void setUp() {
             requestBody = ToolsManagerRequestHelper.buildOne();

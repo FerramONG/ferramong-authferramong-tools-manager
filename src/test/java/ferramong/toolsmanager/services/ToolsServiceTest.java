@@ -18,14 +18,16 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @Import(ToolsManagerServiceTestConfig.class)
-public class ToolsManagerServiceTest {
+public class ToolsServiceTest {
     @Autowired private ToolsRepository repository;
-    @Autowired private ToolsManagerService service;
+    @Autowired private ToolsService service;
 
     @Nested class GetTool {
         private Tool toolEntity;
@@ -129,8 +131,9 @@ public class ToolsManagerServiceTest {
         @BeforeEach void setUp() {
             toolEntity = ToolEntityHelper.buildOne(1);
 
-            when(repository.deleteByIdAndOwnerId(anyInt(), anyInt())).thenReturn(Optional.empty());
-            when(repository.deleteByIdAndOwnerId(toolEntity.getId(), toolEntity.getOwnerId()))
+            doNothing().when(repository).delete(any(Tool.class));
+            when(repository.findByIdAndOwnerId(anyInt(), anyInt())).thenReturn(Optional.empty());
+            when(repository.findByIdAndOwnerId(toolEntity.getId(), toolEntity.getOwnerId()))
                     .thenReturn(Optional.of(toolEntity));
         }
 

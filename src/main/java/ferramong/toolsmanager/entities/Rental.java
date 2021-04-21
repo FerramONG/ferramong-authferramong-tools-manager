@@ -21,14 +21,16 @@ public class Rental {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "renter_id")
+    @Column(name = "renter_id", nullable = false)
     private int renterId;
     @OneToOne
-    @JoinColumn(name = "tool_id", referencedColumnName = "id")
+    @JoinColumn(name = "tool_id", referencedColumnName = "id", nullable = false)
     private Tool tool;
 
-    @Column(name = "rent_from")
+    @Column(name = "rent_from", nullable = false)
     private LocalDate rentFrom;
     @Column(name = "rent_until")
     private LocalDate rentUntil;
+    @Column(name = "expected_return_date", nullable = false)
+    private LocalDate expectedReturnDate;
 }

@@ -1,6 +1,6 @@
 package ferramong.toolsmanager.helpers;
 
-import ferramong.toolsmanager.dto.ToolsManagerRequest;
+import ferramong.toolsmanager.dto.ToolsRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -9,8 +9,8 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ToolsManagerRequestHelper {
 
-    public static ToolsManagerRequest buildOne() {
-        return ToolsManagerRequest.builder()
+    public static ToolsRequest buildOne() {
+        return ToolsRequest.builder()
                 .name("name")
                 .category("category")
                 .description("description")

@@ -12,7 +12,7 @@ import static java.util.Collections.emptyList;
 
 @Service
 @AllArgsConstructor
-public class ToolsSearchService {
+public class SearchService {
 
     private final ToolsRepository toolsRepository;
 

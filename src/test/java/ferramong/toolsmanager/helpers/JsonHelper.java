@@ -14,7 +14,7 @@ public final class JsonHelper {
         try {
             return objectMapper.writeValueAsString(source);
         } catch (JsonProcessingException e) {
-            return "{}";
+            return "null";
         }
     }
 }

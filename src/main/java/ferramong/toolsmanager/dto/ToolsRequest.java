@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ToolsManagerRequest {
+public class ToolsRequest {
 
     @NotBlank
     private String name;

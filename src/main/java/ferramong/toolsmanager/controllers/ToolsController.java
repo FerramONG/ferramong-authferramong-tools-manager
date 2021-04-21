@@ -1,12 +1,11 @@
 package ferramong.toolsmanager.controllers;
 
 import ferramong.toolsmanager.converters.ToolDtoConverter;
-import ferramong.toolsmanager.dto.DeletedToolResponse;
 import ferramong.toolsmanager.dto.ErrorResponse;
 import ferramong.toolsmanager.dto.Tool;
-import ferramong.toolsmanager.dto.ToolsManagerRequest;
+import ferramong.toolsmanager.dto.ToolsRequest;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
-import ferramong.toolsmanager.services.ToolsManagerService;
+import ferramong.toolsmanager.services.ToolsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -31,9 +31,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
 )
 @AllArgsConstructor
-@Tag(name = "Tools Manager API", description = "Manage dwellers' tools")
-public class ToolsManagerController {
-    private final ToolsManagerService toolsManagerService;
+@Tag(name = "Tools", description = "Manage dwellers' tools")
+public class ToolsController {
+    private final ToolsService toolsService;
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(
@@ -48,7 +48,7 @@ public class ToolsManagerController {
             }
     )
     public List<Tool> getDwellerTools(@RequestHeader("dwellerId") int dwellerId) {
-        var entities = toolsManagerService.getAllTools(dwellerId);
+        var entities = toolsService.getAllTools(dwellerId);
         return entities.stream()
                 .map(ToolDtoConverter::from)
                 .filter(Objects::nonNull)
@@ -76,11 +76,12 @@ public class ToolsManagerController {
     )
     public Tool getDwellerTool(@RequestHeader("dwellerId") int dwellerId, @PathVariable("toolId") int toolId)
             throws ToolNotFoundException {
-        var entity = toolsManagerService.getTool(toolId, dwellerId);
+        var entity = toolsService.getTool(toolId, dwellerId);
         return ToolDtoConverter.from(entity);
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(
             summary = "Register a new tool.",
             parameters = @Parameter(name = "dwellerId", description = "Tool owner ID", required = true),
@@ -96,7 +97,7 @@ public class ToolsManagerController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public Tool createTool(@RequestBody @Valid ToolsManagerRequest tool, @RequestHeader("dwellerId") int dwellerId) {
+    public Tool createTool(@RequestBody @Valid ToolsRequest tool, @RequestHeader("dwellerId") int dwellerId) {
         var toolToCreate = ferramong.toolsmanager.entities.Tool.builder()
                 .name(tool.getName())
                 .category(tool.getCategory())
@@ -108,7 +109,7 @@ public class ToolsManagerController {
                 .ownerId(dwellerId)
                 .build();
 
-        var createdTool = toolsManagerService.createTool(toolToCreate);
+        var createdTool = toolsService.createTool(toolToCreate);
         return ToolDtoConverter.from(createdTool);
     }
 
@@ -132,7 +133,7 @@ public class ToolsManagerController {
             }
     )
     public Tool updateTool(
-            @RequestBody @Valid ToolsManagerRequest tool,
+            @RequestBody @Valid ToolsRequest tool,
             @RequestHeader("dwellerId") int dwellerId,
             @PathVariable("toolId") int toolId
     ) throws ToolNotFoundException {
@@ -148,7 +149,7 @@ public class ToolsManagerController {
                 .ownerId(dwellerId)
                 .build();
 
-        var updatedTool = toolsManagerService.updateTool(toolToUpdate);
+        var updatedTool = toolsService.updateTool(toolToUpdate);
         return ToolDtoConverter.from(updatedTool);
     }
 
@@ -164,11 +165,14 @@ public class ToolsManagerController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public List<DeletedToolResponse> deleteAllTools(@RequestHeader("dwellerId") int dwellerId) {
-        var deletedTools = toolsManagerService.deleteAllTools(dwellerId);
+    public List<Tool> deleteAllTools(@RequestHeader("dwellerId") int dwellerId) {
+        var deletedTools = toolsService.deleteAllTools(dwellerId);
 
         return deletedTools.stream()
-                .map(it -> new DeletedToolResponse(it.getId()))
+                .map(it -> Tool.builder()
+                        .id(it.getId())
+                        .name(it.getName())
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -193,7 +197,7 @@ public class ToolsManagerController {
     )
     public Tool deleteTool(@RequestHeader("dwellerId") int dwellerId, @PathVariable("toolId") int toolId)
             throws ToolNotFoundException {
-        var deletedTool = toolsManagerService.deleteTool(toolId, dwellerId);
+        var deletedTool = toolsService.deleteTool(toolId, dwellerId);
         return ToolDtoConverter.from(deletedTool);
     }
 }
