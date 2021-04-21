@@ -34,7 +34,7 @@ public class SearchController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully retrieved tools containing searched name.")
     })
-    @GetMapping(value = "/search/tools/{toolName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/tools/{toolName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Tool> searchTools(
             @Parameter(description = "The name to search for", required = true, example = "hammer")
             @PathVariable("toolName")

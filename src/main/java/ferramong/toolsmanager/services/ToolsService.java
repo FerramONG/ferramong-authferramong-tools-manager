@@ -45,6 +45,7 @@ public class ToolsService {
     public Tool deleteTool(int toolId, int dwellerId) throws ToolNotFoundException {
         var toolToDeleteEntity = toolsRepository.findByIdAndOwnerId(toolId, dwellerId);
         if (toolToDeleteEntity.isPresent()) {
+            // TODO: Validate if tool is rented before deleting.
             var toolToDelete = toolToDeleteEntity.get();
             toolsRepository.delete(toolToDelete);
 
@@ -56,6 +57,7 @@ public class ToolsService {
 
     @Transactional
     public List<Tool> deleteAllTools(int dwellerId) {
+        // TODO: Delete only tools that are not rented.
         return toolsRepository.deleteAllByOwnerId(dwellerId);
     }
 }
