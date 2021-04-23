@@ -11,6 +11,6 @@ public class FerramongConfig {
     @Value("${ferramong.tools-manager.base-url}")
     private String toolsManagerBaseUrl;
 
-    @Value("${ferramong.scheduler.base-url}")
-    private String schedulerBaseUrl;
+    @Value("${ferramong.auth.base-url}")
+    private String authBaseUrl;
 }

@@ -24,5 +24,6 @@ logging.level:
   org.hibernate.type.descriptor.sql.BasicBinder: "TRACE"
 
 ferramong:
-  tools-manager.base-url: "http://localhost:8081"
-  scheduler.base-url: "https://ferramong-scheduler.herokuapp.com"
+  tools-manager.base-url: "http://localhost:8080"
+  auth.base-url: "https://ferramong-auth.herokuapp.com"
+

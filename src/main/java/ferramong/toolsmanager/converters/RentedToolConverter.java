@@ -2,6 +2,7 @@ package ferramong.toolsmanager.converters;
 
 import ferramong.toolsmanager.dto.RentedTool;
 import ferramong.toolsmanager.entities.Rental;
+import ferramong.toolsmanager.entities.Tool;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,16 @@ public final class RentedToolConverter {
                     .rentUntil(source.getRentUntil())
                     .expectedReturnDate(source.getExpectedReturnDate())
                     .tool(ToolDtoConverter.from(source.getTool()))
+                    .build();
+        }
+
+        return null;
+    }
+
+    public static RentedTool from(Tool source) {
+        if (nonNull(source)) {
+            return RentedTool.builder()
+                    .tool(ToolDtoConverter.from(source))
                     .build();
         }
 

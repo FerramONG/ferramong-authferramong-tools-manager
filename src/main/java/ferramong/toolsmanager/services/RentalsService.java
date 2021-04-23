@@ -25,6 +25,14 @@ public class RentalsService {
         return repository.findAllByRenterId(renterDwellerId);
     }
 
+    public List<Rental> getAllRentedTools(@NotNull String toolName) {
+        return repository.findAllByToolNameStartsWithIgnoreCase(toolName);
+    }
+
+    public List<Rental> getAllRentedOrOwnedTools(int dwellerId) {
+        return repository.findAllByRenterIdOrToolOwnerId(dwellerId, dwellerId);
+    }
+
     @Transactional
     public Rental rentTool(@NotNull RentalRequest rentalRequest)
             throws ToolNotFoundException, ToolNotAvailableException {
@@ -54,8 +62,8 @@ public class RentalsService {
             var rentalToReturn = rentalEntity.get();
             rentalToReturn.setRentUntil(LocalDate.now());
 
-            // TODO: If delayed, check if payment has been done.
-            // TODO: If returned earlier, return creditools to renter.
+            // TODO: If delayed, check if payment has been done. Use pay/debit API.
+            // TODO: If returned earlier, return creditools to renter. Use pay/credit API.
             // TODO: Pay tool owner for rented days.
 
             return repository.save(rentalToReturn);

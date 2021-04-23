@@ -24,6 +24,14 @@ public class ToolsService {
         return toolsRepository.findAllByOwnerId(dwellerId);
     }
 
+    public List<Tool> getAllAvailableTools(int dwellerId) {
+        return toolsRepository.findAllAvailableByOwnerId(dwellerId);
+    }
+
+    public List<Tool> getAllAvailableTools(@NotNull String toolName) {
+        return toolsRepository.findAllAvailableByNameStartsWith(toolName);
+    }
+
     @Transactional
     public Tool createTool(@NotNull Tool tool) {
         // TODO: Validate dwellerId.

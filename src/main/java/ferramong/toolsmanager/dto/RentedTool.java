@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -19,14 +18,12 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @JsonInclude(NON_NULL)
 public class RentedTool {
     private Tool tool;
-    private int renterDwellerId;
+    private Integer renterDwellerId;
 
-    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate rentFrom;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate rentUntil;
-    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate expectedReturnDate;
 }

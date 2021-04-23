@@ -4,10 +4,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 public class ToolsRepositoryTest {
@@ -47,32 +45,6 @@ public class ToolsRepositoryTest {
         @Test void whenDwellerDoesNotOwnTools() {
             final int dwellerId = -1;
             assertThat(repository.deleteAllByOwnerId(dwellerId)).isEmpty();
-        }
-    }
-
-    @Nested class DeleteByIdAndOwnerId {
-        @Test void whenToolIsDeleted() {
-            assertThat(repository.deleteByIdAndOwnerId(EXISTING_TOOL_ID, JOHN_DOE_ID)).isPresent();
-        }
-
-        @Test void whenToolIsNotFound() {
-            final int toolId = -1;
-            assertThat(repository.findByIdAndOwnerId(toolId, JOHN_DOE_ID)).isEmpty();
-        }
-    }
-
-    @Nested class FindByNameStartsWithIgnoreCase {
-        @Test void whenToolNameIsNull() {
-            assertThatThrownBy(() -> repository.findByNameStartsWithIgnoreCase(null))
-                    .isInstanceOf(InvalidDataAccessApiUsageException.class);
-        }
-
-        @Test void whenToolNameIsBlank() {
-            assertThat(repository.findByNameStartsWithIgnoreCase("")).isNotEmpty();
-        }
-
-        @Test void whenToolNameMatchesExistingTools() {
-            assertThat(repository.findByNameStartsWithIgnoreCase(EXISTING_TOOL_NAME_START)).isNotEmpty();
         }
     }
 }

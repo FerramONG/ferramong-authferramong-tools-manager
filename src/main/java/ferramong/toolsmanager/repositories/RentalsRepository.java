@@ -9,7 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface RentalsRepository extends JpaRepository<Rental, Integer> {
-    List<Rental> findAllByRenterId(int renterDwellerId);
+
     Optional<Rental> findByToolIdAndToolOwnerId(int toolId, int ownerDwellerId);
-    Optional<Rental> deleteByToolIdAndToolOwnerId(int toolId, int ownerDwellerId);
+
+    List<Rental> findAllByRenterId(int renterDwellerId);
+    List<Rental> findAllByRenterIdOrToolOwnerId(int renterDwellerId, int ownerDwellerId);
+    List<Rental> findAllByToolNameStartsWithIgnoreCase(String toolName);
 }
