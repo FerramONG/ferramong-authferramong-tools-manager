@@ -15,4 +15,4 @@ logging.level:
 
 ferramong:
   tools-manager.base-url: "https://ferramong-tools-manager.herokuapp.com"
-  scheduler.base-url: "https://ferramong-scheduler.herokuapp.com"
+  auth.base-url: "https://ferramong-auth.herokuapp.com"
