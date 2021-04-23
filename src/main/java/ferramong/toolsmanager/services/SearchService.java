@@ -1,10 +1,10 @@
 package ferramong.toolsmanager.services;
 
 import ferramong.toolsmanager.clients.FerramongAuthClient;
-import ferramong.toolsmanager.converters.RentedToolConverter;
-import ferramong.toolsmanager.dto.RentedTool;
+import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.SearchByDwellerResult;
 import ferramong.toolsmanager.dto.SearchByToolResult;
+import ferramong.toolsmanager.dto.Tool;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,20 +22,20 @@ public class SearchService {
     private final FerramongAuthClient authClient;
 
     public SearchByToolResult searchByTool(String toolName, boolean fetchAvailable, boolean fetchRented) {
-        List<RentedTool> availableTools = List.of();
-        List<RentedTool> rentedTools = List.of();
+        List<Tool> availableTools = List.of();
+        List<Tool> rentedTools = List.of();
 
         if (fetchAvailable) {
             availableTools = toolsService.getAllAvailableTools(toolName).stream()
                     .filter(Objects::nonNull)
-                    .map(RentedToolConverter::from)
+                    .map(ToolDtoConverter::from)
                     .collect(Collectors.toList());
         }
 
         if (fetchRented) {
             rentedTools = rentalsService.getAllRentedTools(toolName).stream()
                     .filter(Objects::nonNull)
-                    .map(RentedToolConverter::from)
+                    .map(ToolDtoConverter::from)
                     .collect(Collectors.toList());
         }
 
@@ -46,14 +46,14 @@ public class SearchService {
     }
 
     public SearchByDwellerResult searchByDweller(String dwellerName, boolean fetchOwned, boolean fetchRented) {
-        List<RentedTool> ownedTools = List.of();
-        List<RentedTool> rentedTools = List.of();
+        List<Tool> ownedTools = List.of();
+        List<Tool> rentedTools = List.of();
 
         try {
             final var dweller = authClient.getDwellerByName(dwellerName).block();
             final var ownedOrRentedTools = rentalsService.getAllRentedOrOwnedTools(dweller.getId()).stream()
                     .filter(Objects::nonNull)
-                    .map(RentedToolConverter::from)
+                    .map(ToolDtoConverter::from)
                     .collect(Collectors.toList());
 
             if (fetchOwned) {
@@ -73,24 +73,24 @@ public class SearchService {
                 .build();
     }
 
-    private List<RentedTool> getDwellerOwnedTools(int dwellerId, List<RentedTool> ownedOrRentedTools) {
+    private List<Tool> getDwellerOwnedTools(int dwellerId, List<Tool> ownedOrRentedTools) {
         final var ownedTools = toolsService.getAllAvailableTools(dwellerId).stream()
                 .filter(Objects::nonNull)
-                .map(RentedToolConverter::from)
+                .map(ToolDtoConverter::from)
                 .collect(Collectors.toList());
 
         ownedTools.addAll(
                 ownedOrRentedTools.stream()
-                    .filter(it -> it.getTool().getOwnerId().equals(dwellerId))
+                    .filter(it -> it.getOwnerId().equals(dwellerId))
                     .collect(Collectors.toList())
         );
 
         return ownedTools;
     }
 
-    private List<RentedTool> getDwellerRentedTools(int dwellerId, List<RentedTool> ownedOrRentedTools) {
+    private List<Tool> getDwellerRentedTools(int dwellerId, List<Tool> ownedOrRentedTools) {
         return ownedOrRentedTools.stream()
-                .filter(it -> !it.getTool().getOwnerId().equals(dwellerId))
+                .filter(it -> !it.getOwnerId().equals(dwellerId))
                 .collect(Collectors.toList());
     }
 }

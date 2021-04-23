@@ -1,7 +1,7 @@
 package ferramong.toolsmanager.controllers;
 
 import ferramong.toolsmanager.config.controllers.ToolsManagerControllerTestConfig;
-import ferramong.toolsmanager.dto.ToolsRequest;
+import ferramong.toolsmanager.dto.ToolRequest;
 import ferramong.toolsmanager.helpers.JsonHelper;
 import ferramong.toolsmanager.helpers.ToolsManagerRequestHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +73,7 @@ public class ToolsControllerParametersTest {
     }
 
     @Nested class CreateTool {
-        private ToolsRequest requestBody;
+        private ToolRequest requestBody;
 
         @BeforeEach void setUp() {
             requestBody = ToolsManagerRequestHelper.buildOne();
@@ -134,7 +134,7 @@ public class ToolsControllerParametersTest {
     }
 
     @Nested class UpdateTool {
-        private ToolsRequest requestBody;
+        private ToolRequest requestBody;
 
         @BeforeEach void setUp() {
             requestBody = ToolsManagerRequestHelper.buildOne();

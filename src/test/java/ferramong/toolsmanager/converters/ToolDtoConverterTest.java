@@ -18,7 +18,8 @@ public class ToolDtoConverterTest {
         }
 
         @Test void whenToolEntityIsNull() {
-            assertThat(ToolDtoConverter.from(null)).isNull();
+            toolEntity = null;
+            assertThat(ToolDtoConverter.from(toolEntity)).isNull();
         }
 
         @Test void whenToolEntityHasValues() {

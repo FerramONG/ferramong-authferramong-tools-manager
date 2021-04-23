@@ -24,10 +24,19 @@ public class Tool {
     private String instructions;
     private Double price;
 
+    private Integer ownerId;
+    private Integer renterId;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate availableFrom;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate availableUntil;
 
-    private Integer ownerId;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate rentFrom;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate rentUntil;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate expectedReturnDate;
+
 }

@@ -3,7 +3,7 @@ package ferramong.toolsmanager.controllers;
 import ferramong.toolsmanager.config.controllers.ToolsManagerControllerTestConfig;
 import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.Tool;
-import ferramong.toolsmanager.dto.ToolsRequest;
+import ferramong.toolsmanager.dto.ToolRequest;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.helpers.ToolEntityHelper;
 import ferramong.toolsmanager.services.ToolsService;
@@ -96,7 +96,7 @@ public class ToolsControllerBehaviorTest {
     }
 
     @Nested class CreateTool {
-        private ToolsRequest requestBody;
+        private ToolRequest requestBody;
         private Tool responseBody;
         private ferramong.toolsmanager.entities.Tool toolEntity;
 
@@ -104,7 +104,7 @@ public class ToolsControllerBehaviorTest {
             toolEntity = ToolEntityHelper.buildOne();
 
             responseBody = ToolDtoConverter.from(toolEntity);
-            requestBody = ToolsRequest.builder()
+            requestBody = ToolRequest.builder()
                     .name(toolEntity.getName())
                     .category(toolEntity.getCategory())
                     .description(toolEntity.getDescription())
@@ -133,7 +133,7 @@ public class ToolsControllerBehaviorTest {
     }
 
     @Nested class UpdateTool {
-        private ToolsRequest requestBody;
+        private ToolRequest requestBody;
         private Tool responseBody;
         private ferramong.toolsmanager.entities.Tool toolEntity;
 
@@ -141,7 +141,7 @@ public class ToolsControllerBehaviorTest {
             toolEntity = ToolEntityHelper.buildOne();
 
             responseBody = ToolDtoConverter.from(toolEntity);
-            requestBody = ToolsRequest.builder()
+            requestBody = ToolRequest.builder()
                     .name(toolEntity.getName())
                     .category(toolEntity.getCategory())
                     .description(toolEntity.getDescription())

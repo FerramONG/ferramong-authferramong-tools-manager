@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
 )
 @AllArgsConstructor
-@Tag(name = "Search")
+@Tag(name = "Search", description = "Search for tools")
 public class SearchController {
     private final SearchService service;
 

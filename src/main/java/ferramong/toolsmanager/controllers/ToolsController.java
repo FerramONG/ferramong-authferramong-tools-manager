@@ -3,7 +3,7 @@ package ferramong.toolsmanager.controllers;
 import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.ErrorResponse;
 import ferramong.toolsmanager.dto.Tool;
-import ferramong.toolsmanager.dto.ToolsRequest;
+import ferramong.toolsmanager.dto.ToolRequest;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.services.ToolsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -97,7 +97,7 @@ public class ToolsController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public Tool createTool(@RequestBody @Valid ToolsRequest tool, @RequestHeader("dwellerId") int dwellerId) {
+    public Tool createTool(@RequestBody @Valid ToolRequest tool, @RequestHeader("dwellerId") int dwellerId) {
         var toolToCreate = ferramong.toolsmanager.entities.Tool.builder()
                 .name(tool.getName())
                 .category(tool.getCategory())
@@ -133,7 +133,7 @@ public class ToolsController {
             }
     )
     public Tool updateTool(
-            @RequestBody @Valid ToolsRequest tool,
+            @RequestBody @Valid ToolRequest tool,
             @RequestHeader("dwellerId") int dwellerId,
             @PathVariable("toolId") int toolId
     ) throws ToolNotFoundException {

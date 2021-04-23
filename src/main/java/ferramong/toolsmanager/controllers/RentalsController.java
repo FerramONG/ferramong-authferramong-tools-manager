@@ -1,9 +1,9 @@
 package ferramong.toolsmanager.controllers;
 
-import ferramong.toolsmanager.converters.RentedToolConverter;
+import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.ErrorResponse;
 import ferramong.toolsmanager.dto.RentalRequest;
-import ferramong.toolsmanager.dto.RentedTool;
+import ferramong.toolsmanager.dto.Tool;
 import ferramong.toolsmanager.exceptions.RentalNotFoundException;
 import ferramong.toolsmanager.exceptions.ToolNotAvailableException;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
@@ -49,9 +49,9 @@ public class RentalsController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public List<RentedTool> getRentalsByDweller(@RequestHeader int dwellerId) {
+    public List<Tool> getRentalsByDweller(@RequestHeader int dwellerId) {
         return service.getAllRentedTools(dwellerId).stream()
-                .map(RentedToolConverter::from)
+                .map(ToolDtoConverter::from)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
@@ -73,10 +73,10 @@ public class RentalsController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public RentedTool rentTool(@RequestBody @Valid RentalRequest rentalRequest)
+    public Tool rentTool(@RequestBody @Valid RentalRequest rentalRequest)
             throws ToolNotAvailableException, ToolNotFoundException {
         var rentedToolEntity = service.rentTool(rentalRequest);
-        return RentedToolConverter.from(rentedToolEntity);
+        return ToolDtoConverter.from(rentedToolEntity);
     }
 
     @PutMapping(produces = APPLICATION_JSON_VALUE)
@@ -99,10 +99,10 @@ public class RentalsController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public RentedTool returnTool(@RequestHeader int ownerDwellerId, @RequestHeader int toolId)
+    public Tool returnTool(@RequestHeader int ownerDwellerId, @RequestHeader int toolId)
             throws RentalNotFoundException {
         var returnedToolEntity = service.returnTool(toolId, ownerDwellerId);
-        return RentedToolConverter.from(returnedToolEntity);
+        return ToolDtoConverter.from(returnedToolEntity);
     }
 
     @DeleteMapping(produces = APPLICATION_JSON_VALUE)
@@ -125,9 +125,9 @@ public class RentalsController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public RentedTool cancelRental(@RequestHeader int ownerDwellerId, @RequestHeader int toolId)
+    public Tool cancelRental(@RequestHeader int ownerDwellerId, @RequestHeader int toolId)
             throws RentalNotFoundException {
         var canceledRentalEntity = service.cancelRental(toolId, ownerDwellerId);
-        return RentedToolConverter.from(canceledRentalEntity);
+        return ToolDtoConverter.from(canceledRentalEntity);
     }
 }

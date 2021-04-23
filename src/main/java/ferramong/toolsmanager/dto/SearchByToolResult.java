@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class SearchByToolResult {
-    private List<RentedTool> availableTools;
-    private List<RentedTool> rentedTools;
+    private List<Tool> availableTools;
+    private List<Tool> rentedTools;
 
     public SearchByToolResult() {
         availableTools = new ArrayList<>();
