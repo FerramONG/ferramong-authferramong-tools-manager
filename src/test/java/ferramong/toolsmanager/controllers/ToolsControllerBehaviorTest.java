@@ -4,6 +4,7 @@ import ferramong.toolsmanager.config.controllers.ToolsManagerControllerTestConfi
 import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.Tool;
 import ferramong.toolsmanager.dto.ToolRequest;
+import ferramong.toolsmanager.exceptions.CannotDeleteRentedToolException;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.helpers.ToolEntityHelper;
 import ferramong.toolsmanager.services.ToolsService;
@@ -126,10 +127,6 @@ public class ToolsControllerBehaviorTest {
                     .andExpect(status().isCreated())
                     .andExpect(content().json(toJson(responseBody)));
         }
-
-        @Test void whenDwellerDoesNotExist() throws Exception {
-            // TODO: Implement validation for dweller ID.
-        }
     }
 
     @Nested class UpdateTool {
@@ -217,7 +214,7 @@ public class ToolsControllerBehaviorTest {
     @Nested class DeleteTool {
         private Tool responseBody;
 
-        @BeforeEach void setUp() throws ToolNotFoundException {
+        @BeforeEach void setUp() throws ToolNotFoundException, CannotDeleteRentedToolException {
             var toolEntity = ToolEntityHelper.buildOne();
             responseBody = ToolDtoConverter.from(toolEntity);
 

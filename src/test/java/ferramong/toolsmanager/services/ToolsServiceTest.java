@@ -2,7 +2,7 @@ package ferramong.toolsmanager.services;
 
 import ferramong.toolsmanager.config.services.ToolsManagerServiceTestConfig;
 import ferramong.toolsmanager.entities.Tool;
-import ferramong.toolsmanager.exceptions.ToolNotFoundException;
+import ferramong.toolsmanager.exceptions.*;
 import ferramong.toolsmanager.helpers.ToolEntityHelper;
 import ferramong.toolsmanager.repositories.ToolsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,14 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @Import(ToolsManagerServiceTestConfig.class)
 public class ToolsServiceTest {
     @Autowired private ToolsRepository repository;
-    @Autowired private ToolsService service;
+    @Autowired private ToolsService toolsService;
+    @Autowired private RentalsService rentalsService;
 
     @Nested class GetTool {
         private Tool toolEntity;
@@ -44,11 +44,11 @@ public class ToolsServiceTest {
             final int toolId = 0;
             final int dwellerId = 0;
 
-            assertThatThrownBy(() -> service.getTool(toolId, dwellerId)).isInstanceOf(ToolNotFoundException.class);
+            assertThatThrownBy(() -> toolsService.getTool(toolId, dwellerId)).isInstanceOf(ToolNotFoundException.class);
         }
 
         @Test void whenToolIsFound() throws ToolNotFoundException {
-            assertThat(service.getTool(toolEntity.getId(), toolEntity.getOwnerId()))
+            assertThat(toolsService.getTool(toolEntity.getId(), toolEntity.getOwnerId()))
                     .usingRecursiveComparison()
                     .isEqualTo(toolEntity);
         }
@@ -66,14 +66,14 @@ public class ToolsServiceTest {
         }
 
         @Test void whenDwellerOwnsTools() {
-            assertThat(service.getAllTools(EXISTING_OWNER_ID))
+            assertThat(toolsService.getAllTools(EXISTING_OWNER_ID))
                     .usingRecursiveFieldByFieldElementComparator()
                     .containsExactlyInAnyOrderElementsOf(toolEntities);
         }
 
         @Test void whenDwellerDoesNotOwnTools() {
             final var dwellerId = 0;
-            assertThat(service.getAllTools(dwellerId)).isEmpty();
+            assertThat(toolsService.getAllTools(dwellerId)).isEmpty();
         }
     }
 
@@ -87,11 +87,11 @@ public class ToolsServiceTest {
         }
 
         @Test void whenToolIsNull() {
-            assertThatThrownBy(() -> service.createTool(null)).isInstanceOf(NullPointerException.class);
+            assertThatThrownBy(() -> toolsService.createTool(null)).isInstanceOf(NullPointerException.class);
         }
 
-        @Test void whenToolIsCreated() {
-            assertThat(service.createTool(toolEntity))
+        @Test void whenToolIsCreated() throws DwellerNotFoundException {
+            assertThat(toolsService.createTool(toolEntity))
                     .usingRecursiveComparison()
                     .isEqualTo(toolEntity);
         }
@@ -100,26 +100,27 @@ public class ToolsServiceTest {
     @Nested class UpdateTool {
         private Tool toolEntity;
 
-        @BeforeEach void setUp() {
+        @BeforeEach void setUp() throws RentalNotFoundException {
             toolEntity = ToolEntityHelper.buildOne(1);
 
             when(repository.findByIdAndOwnerId(anyInt(), anyInt())).thenReturn(Optional.empty());
             when(repository.findByIdAndOwnerId(toolEntity.getId(), toolEntity.getOwnerId()))
                     .thenReturn(Optional.of(toolEntity));
             when(repository.save(toolEntity)).thenReturn(toolEntity);
+            doThrow(new RentalNotFoundException(0)).when(rentalsService).getRentedTool(anyInt(), anyInt());
         }
 
         @Test void whenToolIsNull() {
-            assertThatThrownBy(() -> service.updateTool(null)).isInstanceOf(NullPointerException.class);
+            assertThatThrownBy(() -> toolsService.updateTool(null)).isInstanceOf(NullPointerException.class);
         }
 
         @Test void whenToolIsNotFound() {
             final var missingToolEntity = ToolEntityHelper.buildOne(2);
-            assertThatThrownBy(() -> service.updateTool(missingToolEntity)).isInstanceOf(ToolNotFoundException.class);
+            assertThatThrownBy(() -> toolsService.updateTool(missingToolEntity)).isInstanceOf(ToolNotFoundException.class);
         }
 
-        @Test void whenToolIsUpdated() throws ToolNotFoundException {
-            assertThat(service.updateTool(toolEntity))
+        @Test void whenToolIsUpdated() throws ToolNotFoundException, CannotUpdateRentedToolException {
+            assertThat(toolsService.updateTool(toolEntity))
                     .usingRecursiveComparison()
                     .isEqualTo(toolEntity);
         }
@@ -128,24 +129,25 @@ public class ToolsServiceTest {
     @Nested class DeleteTool {
         private Tool toolEntity;
 
-        @BeforeEach void setUp() {
+        @BeforeEach void setUp() throws RentalNotFoundException {
             toolEntity = ToolEntityHelper.buildOne(1);
 
             doNothing().when(repository).delete(any(Tool.class));
             when(repository.findByIdAndOwnerId(anyInt(), anyInt())).thenReturn(Optional.empty());
             when(repository.findByIdAndOwnerId(toolEntity.getId(), toolEntity.getOwnerId()))
                     .thenReturn(Optional.of(toolEntity));
+            doThrow(new RentalNotFoundException(0)).when(rentalsService).getRentedTool(anyInt(), anyInt());
         }
 
         @Test void whenToolIsNotFound() {
             final var toolId = 0;
             final var dwellerId = 0;
 
-            assertThatThrownBy(() -> service.deleteTool(toolId, dwellerId)).isInstanceOf(ToolNotFoundException.class);
+            assertThatThrownBy(() -> toolsService.deleteTool(toolId, dwellerId)).isInstanceOf(ToolNotFoundException.class);
         }
 
-        @Test void whenToolIsDeleted() throws ToolNotFoundException {
-            assertThat(service.deleteTool(toolEntity.getId(), toolEntity.getOwnerId()))
+        @Test void whenToolIsDeleted() throws ToolNotFoundException, CannotDeleteRentedToolException {
+            assertThat(toolsService.deleteTool(toolEntity.getId(), toolEntity.getOwnerId()))
                     .usingRecursiveComparison()
                     .isEqualTo(toolEntity);
         }
@@ -158,19 +160,19 @@ public class ToolsServiceTest {
         @BeforeEach void setUp() {
             toolEntities = ToolEntityHelper.buildList();
 
-            when(repository.deleteAllByOwnerId(anyInt())).thenReturn(List.of());
-            when(repository.deleteAllByOwnerId(EXISTING_DWELLER_ID)).thenReturn(toolEntities);
+            when(repository.deleteAllByOwnerIdAndIdNotIn(anyInt(), anyList())).thenReturn(List.of());
+            when(repository.deleteAllByOwnerIdAndIdNotIn(eq(EXISTING_DWELLER_ID), anyList())).thenReturn(toolEntities);
         }
 
         @Test void whenDwellerOwnsTools() {
-            assertThat(service.deleteAllTools(EXISTING_DWELLER_ID))
+            assertThat(toolsService.deleteAllTools(EXISTING_DWELLER_ID))
                     .usingRecursiveFieldByFieldElementComparator()
                     .containsExactlyInAnyOrderElementsOf(toolEntities);
         }
 
         @Test void whenDwellerDoesNotOwnTools() {
             final var dwellerId = 0;
-            assertThat(service.deleteAllTools(dwellerId)).isEmpty();
+            assertThat(toolsService.deleteAllTools(dwellerId)).isEmpty();
         }
     }
 }

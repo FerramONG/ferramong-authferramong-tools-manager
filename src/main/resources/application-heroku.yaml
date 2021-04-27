@@ -14,5 +14,9 @@ logging.level:
   org.hibernate.SQL: "DEBUG"
 
 ferramong:
-  tools-manager.base-url: "https://ferramong-tools-manager.herokuapp.com"
-  auth.base-url: "https://ferramong-auth.herokuapp.com"
+  auth:
+    base-url: "https://ferramong-auth.herokuapp.com"
+    timeout: 120
+  pay:
+    base-url: "https://ferramong-pay.herokuapp.com"
+    timeout: 120

@@ -36,15 +36,4 @@ public class ToolsRepositoryTest {
             assertThat(repository.findByIdAndOwnerId(toolId, JOHN_DOE_ID)).isEmpty();
         }
     }
-
-    @Nested class DeleteByOwnerId {
-        @Test void whenDwellerOwnsTools() {
-            assertThat(repository.deleteAllByOwnerId(JOHN_DOE_ID)).isNotEmpty();
-        }
-
-        @Test void whenDwellerDoesNotOwnTools() {
-            final int dwellerId = -1;
-            assertThat(repository.deleteAllByOwnerId(dwellerId)).isEmpty();
-        }
-    }
 }

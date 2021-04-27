@@ -7,10 +7,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 public class FerramongConfig {
-
-    @Value("${ferramong.tools-manager.base-url}")
-    private String toolsManagerBaseUrl;
-
     @Value("${ferramong.auth.base-url}")
     private String authBaseUrl;
+
+    @Value("${ferramong.auth.timeout}")
+    private Integer authTimeoutInSeconds;
+
+    @Value("${ferramong.pay.base-url}")
+    private String payBaseUrl;
+
+    @Value("${ferramong.pay.timeout}")
+    private Integer payTimeoutInSeconds;
 }

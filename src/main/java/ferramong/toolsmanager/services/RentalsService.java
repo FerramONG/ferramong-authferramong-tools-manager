@@ -1,13 +1,18 @@
 package ferramong.toolsmanager.services;
 
+import ferramong.toolsmanager.clients.FerramongAuthClient;
+import ferramong.toolsmanager.clients.FerramongPayClient;
+import ferramong.toolsmanager.dto.Payment;
 import ferramong.toolsmanager.dto.RentalRequest;
 import ferramong.toolsmanager.entities.Rental;
 import ferramong.toolsmanager.entities.Tool;
+import ferramong.toolsmanager.exceptions.DwellerNotFoundException;
 import ferramong.toolsmanager.exceptions.RentalNotFoundException;
 import ferramong.toolsmanager.exceptions.ToolNotAvailableException;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.repositories.RentalsRepository;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -16,16 +21,27 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@NoArgsConstructor
 public class RentalsService {
-    private final RentalsRepository repository;
-    private final ToolsService toolsService;
+    @Autowired private RentalsRepository repository;
+    @Autowired private ToolsService toolsService;
+    @Autowired private FerramongAuthClient authClient;
+    @Autowired private FerramongPayClient payClient;
 
-    public List<Rental> getAllRentedTools(int renterDwellerId) {
+    public Rental getRentedTool(int toolId, int ownerDwellerId) throws RentalNotFoundException {
+        return repository.findByToolIdAndToolOwnerId(toolId, ownerDwellerId)
+                .orElseThrow(() -> new RentalNotFoundException(toolId));
+    }
+
+    public List<Rental> getAllRentedToolsByOwner(int ownerDwellerId) {
+        return repository.findAllByToolOwnerId(ownerDwellerId);
+    }
+
+    public List<Rental> getAllRentedToolsByRenter(int renterDwellerId) {
         return repository.findAllByRenterId(renterDwellerId);
     }
 
-    public List<Rental> getAllRentedTools(@NotNull String toolName) {
+    public List<Rental> getAllRentedToolsByName(@NotNull String toolName) {
         return repository.findAllByToolNameStartsWithIgnoreCase(toolName);
     }
 
@@ -35,18 +51,18 @@ public class RentalsService {
 
     @Transactional
     public Rental rentTool(@NotNull RentalRequest rentalRequest)
-            throws ToolNotFoundException, ToolNotAvailableException {
-        // TODO: Validate dweller IDs.
+            throws ToolNotFoundException, ToolNotAvailableException, DwellerNotFoundException {
+        authClient.getDwellerById(rentalRequest.getRenterDwellerId());
+
         var toolToRent = toolsService.getTool(rentalRequest.getToolId(), rentalRequest.getOwnerDwellerId());
         if (isAvailableForRental(toolToRent, rentalRequest.getReturnDate())) {
-            // TODO: Charge dweller to rent tool.
+            payClient.chargeCreditools(new Payment(rentalRequest.getRenterDwellerId(), toolToRent.getPrice()));
 
             return repository.save(
                     Rental.builder()
-                            .renterId(rentalRequest.getRenterDwellerId())
                             .tool(toolToRent)
+                            .renterId(rentalRequest.getRenterDwellerId())
                             .rentFrom(LocalDate.now())
-                            .rentUntil(null)
                             .expectedReturnDate(rentalRequest.getReturnDate())
                             .build()
             );
@@ -62,25 +78,10 @@ public class RentalsService {
             var rentalToReturn = rentalEntity.get();
             rentalToReturn.setRentUntil(LocalDate.now());
 
-            // TODO: If delayed, check if payment has been done. Use pay/debit API.
-            // TODO: If returned earlier, return creditools to renter. Use pay/credit API.
-            // TODO: Pay tool owner for rented days.
+            chargeDelayedDaysIfAny(rentalToReturn);
+            payToolOwner(rentalToReturn);
 
             return repository.save(rentalToReturn);
-        }
-
-        throw new RentalNotFoundException(toolId);
-    }
-
-    @Transactional
-    public Rental cancelRental(int toolId, int ownerDwellerId) throws RentalNotFoundException {
-        var rentalEntity = repository.findByToolIdAndToolOwnerId(toolId, ownerDwellerId);
-        if (rentalEntity.isPresent()) {
-            // TODO: Return creditools to renter.
-            var rentalToCancel = rentalEntity.get();
-            repository.delete(rentalToCancel);
-
-            return rentalEntity.get();
         }
 
         throw new RentalNotFoundException(toolId);
@@ -89,5 +90,22 @@ public class RentalsService {
     private boolean isAvailableForRental(@NotNull Tool toolToRent, @NotNull LocalDate rentUntil) {
         var rentalEntity = repository.findByToolIdAndToolOwnerId(toolToRent.getId(), toolToRent.getOwnerId());
         return rentalEntity.isEmpty() && !rentUntil.isAfter(toolToRent.getAvailableUntil());
+    }
+
+    private void chargeDelayedDaysIfAny(Rental rentalToReturn) {
+        final int delayedDays = LocalDate.now().compareTo(rentalToReturn.getExpectedReturnDate());
+        if (delayedDays > 0) {
+            final double priceToCharge = rentalToReturn.getTool().getPrice() * delayedDays;
+            payClient.chargeCreditools(new Payment(rentalToReturn.getRenterId(), priceToCharge));
+        }
+    }
+
+    private void payToolOwner(Rental rentalToReturn) {
+        final LocalDate rentFrom = rentalToReturn.getRentFrom();
+        final LocalDate rentUntil = rentalToReturn.getRentUntil();
+
+        final int rentedDays = rentUntil.compareTo(rentFrom);
+        final double priceToPay = rentalToReturn.getTool().getPrice() * rentedDays;
+        payClient.addCreditools(new Payment(rentalToReturn.getTool().getOwnerId(), priceToPay));
     }
 }

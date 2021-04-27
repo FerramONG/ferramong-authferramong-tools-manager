@@ -16,9 +16,7 @@ public interface ToolsRepository extends JpaRepository<Tool, Integer> {
 
     List<Tool> findAllByOwnerId(int ownerId);
     List<Tool> deleteAllByOwnerId(int ownerId);
-
-    @Query("select t from Tool t where t.id not in ( select r.tool.id from Rental r )")
-    List<Tool> findAllAvailableTools();
+    List<Tool> deleteAllByOwnerIdAndIdNotIn(int ownerId, List<Integer> excludedToolIds);
 
     @Query(
             "select t from Tool t " +
@@ -29,4 +27,5 @@ public interface ToolsRepository extends JpaRepository<Tool, Integer> {
 
     @Query("select t from Tool t where t.ownerId = :ownerId and t.id not in ( select r.tool.id from Rental r )")
     List<Tool> findAllAvailableByOwnerId(@Param("ownerId") int ownerId);
+
 }

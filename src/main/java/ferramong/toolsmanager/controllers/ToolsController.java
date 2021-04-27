@@ -4,6 +4,9 @@ import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.ErrorResponse;
 import ferramong.toolsmanager.dto.Tool;
 import ferramong.toolsmanager.dto.ToolRequest;
+import ferramong.toolsmanager.exceptions.CannotDeleteRentedToolException;
+import ferramong.toolsmanager.exceptions.CannotUpdateRentedToolException;
+import ferramong.toolsmanager.exceptions.DwellerNotFoundException;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
 import ferramong.toolsmanager.services.ToolsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,8 +53,8 @@ public class ToolsController {
     public List<Tool> getDwellerTools(@RequestHeader("dwellerId") int dwellerId) {
         var entities = toolsService.getAllTools(dwellerId);
         return entities.stream()
-                .map(ToolDtoConverter::from)
                 .filter(Objects::nonNull)
+                .map(ToolDtoConverter::from)
                 .collect(Collectors.toList());
     }
 
@@ -97,7 +100,8 @@ public class ToolsController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public Tool createTool(@RequestBody @Valid ToolRequest tool, @RequestHeader("dwellerId") int dwellerId) {
+    public Tool createTool(@RequestBody @Valid ToolRequest tool, @RequestHeader("dwellerId") int dwellerId)
+            throws DwellerNotFoundException {
         var toolToCreate = ferramong.toolsmanager.entities.Tool.builder()
                 .name(tool.getName())
                 .category(tool.getCategory())
@@ -123,6 +127,10 @@ public class ToolsController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully updated existing tool."),
                     @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request. Check response body for details.",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(
                             responseCode = "404",
                             description = "Tool not found.",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -136,7 +144,7 @@ public class ToolsController {
             @RequestBody @Valid ToolRequest tool,
             @RequestHeader("dwellerId") int dwellerId,
             @PathVariable("toolId") int toolId
-    ) throws ToolNotFoundException {
+    ) throws ToolNotFoundException, CannotUpdateRentedToolException {
         var toolToUpdate = ferramong.toolsmanager.entities.Tool.builder()
                 .id(toolId)
                 .name(tool.getName())
@@ -155,7 +163,7 @@ public class ToolsController {
 
     @DeleteMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(
-            summary = "Remove all tools from a single owner.",
+            summary = "Remove all available tools from a single owner.",
             parameters = @Parameter(name = "dwellerId", description = "Tool owner ID", required = true),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully removed all tools from dweller."),
@@ -178,7 +186,7 @@ public class ToolsController {
 
     @DeleteMapping(path = "/{toolId}", produces = APPLICATION_JSON_VALUE)
     @Operation(
-            summary = "Remove an existing tool.",
+            summary = "Remove an existing available tool.",
             parameters = {
                     @Parameter(name = "dwellerId", description = "Tool owner ID", required = true),
                     @Parameter(name = "toolId", description = "Tool ID", required = true)
@@ -196,7 +204,7 @@ public class ToolsController {
             }
     )
     public Tool deleteTool(@RequestHeader("dwellerId") int dwellerId, @PathVariable("toolId") int toolId)
-            throws ToolNotFoundException {
+            throws ToolNotFoundException, CannotDeleteRentedToolException {
         var deletedTool = toolsService.deleteTool(toolId, dwellerId);
         return ToolDtoConverter.from(deletedTool);
     }

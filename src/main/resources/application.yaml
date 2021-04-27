@@ -24,6 +24,9 @@ logging.level:
   org.hibernate.type.descriptor.sql.BasicBinder: "TRACE"
 
 ferramong:
-  tools-manager.base-url: "http://localhost:8080"
-  auth.base-url: "https://ferramong-auth.herokuapp.com"
-
+  auth:
+    base-url: "https://ferramong-auth.herokuapp.com"
+    timeout: 120
+  pay:
+    base-url: "https://ferramong-pay.herokuapp.com"
+    timeout: 120

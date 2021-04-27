@@ -4,6 +4,7 @@ import ferramong.toolsmanager.converters.ToolDtoConverter;
 import ferramong.toolsmanager.dto.ErrorResponse;
 import ferramong.toolsmanager.dto.RentalRequest;
 import ferramong.toolsmanager.dto.Tool;
+import ferramong.toolsmanager.exceptions.DwellerNotFoundException;
 import ferramong.toolsmanager.exceptions.RentalNotFoundException;
 import ferramong.toolsmanager.exceptions.ToolNotAvailableException;
 import ferramong.toolsmanager.exceptions.ToolNotFoundException;
@@ -50,7 +51,7 @@ public class RentalsController {
             }
     )
     public List<Tool> getRentalsByDweller(@RequestHeader int dwellerId) {
-        return service.getAllRentedTools(dwellerId).stream()
+        return service.getAllRentedToolsByRenter(dwellerId).stream()
                 .map(ToolDtoConverter::from)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -74,7 +75,7 @@ public class RentalsController {
             }
     )
     public Tool rentTool(@RequestBody @Valid RentalRequest rentalRequest)
-            throws ToolNotAvailableException, ToolNotFoundException {
+            throws ToolNotAvailableException, ToolNotFoundException, DwellerNotFoundException {
         var rentedToolEntity = service.rentTool(rentalRequest);
         return ToolDtoConverter.from(rentedToolEntity);
     }
@@ -103,31 +104,5 @@ public class RentalsController {
             throws RentalNotFoundException {
         var returnedToolEntity = service.returnTool(toolId, ownerDwellerId);
         return ToolDtoConverter.from(returnedToolEntity);
-    }
-
-    @DeleteMapping(produces = APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Cancel an existing rental.",
-            parameters = {
-                    @Parameter(name = "ownerDwellerId", description = "Tool owner ID", required = true),
-                    @Parameter(name = "toolId", description = "Tool ID", required = true)
-            },
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully canceled rental."),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Rental not found.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Unexpected error occurred.",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-            }
-    )
-    public Tool cancelRental(@RequestHeader int ownerDwellerId, @RequestHeader int toolId)
-            throws RentalNotFoundException {
-        var canceledRentalEntity = service.cancelRental(toolId, ownerDwellerId);
-        return ToolDtoConverter.from(canceledRentalEntity);
     }
 }

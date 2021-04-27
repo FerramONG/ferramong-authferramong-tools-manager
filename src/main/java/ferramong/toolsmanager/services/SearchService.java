@@ -33,7 +33,7 @@ public class SearchService {
         }
 
         if (fetchRented) {
-            rentedTools = rentalsService.getAllRentedTools(toolName).stream()
+            rentedTools = rentalsService.getAllRentedToolsByName(toolName).stream()
                     .filter(Objects::nonNull)
                     .map(ToolDtoConverter::from)
                     .collect(Collectors.toList());
@@ -50,7 +50,7 @@ public class SearchService {
         List<Tool> rentedTools = List.of();
 
         try {
-            final var dweller = authClient.getDwellerByName(dwellerName).block();
+            final var dweller = authClient.getDwellerByName(dwellerName);
             final var ownedOrRentedTools = rentalsService.getAllRentedOrOwnedTools(dweller.getId()).stream()
                     .filter(Objects::nonNull)
                     .map(ToolDtoConverter::from)
