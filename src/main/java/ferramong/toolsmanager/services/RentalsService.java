@@ -56,7 +56,7 @@ public class RentalsService {
 
         var toolToRent = toolsService.getTool(rentalRequest.getToolId(), rentalRequest.getOwnerDwellerId());
         if (isAvailableForRental(toolToRent, rentalRequest.getReturnDate())) {
-            payClient.chargeCreditools(new Payment(rentalRequest.getRenterDwellerId(), toolToRent.getPrice()));
+//            payClient.chargeCreditools(new Payment(rentalRequest.getRenterDwellerId(), toolToRent.getPrice()));
 
             return repository.save(
                     Rental.builder()
@@ -78,8 +78,8 @@ public class RentalsService {
             var rentalToReturn = rentalEntity.get();
             rentalToReturn.setRentUntil(LocalDate.now());
 
-            chargeDelayedDaysIfAny(rentalToReturn);
-            payToolOwner(rentalToReturn);
+//            chargeDelayedDaysIfAny(rentalToReturn);
+//            payToolOwner(rentalToReturn);
 
             return repository.save(rentalToReturn);
         }
