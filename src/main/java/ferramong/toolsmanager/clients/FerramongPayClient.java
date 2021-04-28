@@ -28,7 +28,7 @@ public class FerramongPayClient {
         final String path = "/pay/creditools";
 
         final Duration timeout = Duration.of(ferramongConfig.getPayTimeoutInSeconds(), SECONDS);
-        log.debug("chargeCreditools: requestBody={}",
+        log.info("chargeCreditools: requestBody={}",
                 ReflectionToStringBuilder.toString(payment, ToStringStyle.JSON_STYLE));
         webClient.post()
                 .uri(path)
