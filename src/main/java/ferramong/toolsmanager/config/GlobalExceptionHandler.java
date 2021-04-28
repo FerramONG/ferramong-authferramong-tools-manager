@@ -20,8 +20,6 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    // TODO: Enhance error message returned as response body for the client.
-
     @ExceptionHandler({
             ToolNotAvailableException.class,
             DwellerNotFoundException.class,
