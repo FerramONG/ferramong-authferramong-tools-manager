@@ -3,6 +3,8 @@ package ferramong.toolsmanager.clients;
 import ferramong.toolsmanager.config.FerramongConfig;
 import ferramong.toolsmanager.dto.Payment;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,6 +28,8 @@ public class FerramongPayClient {
         final String path = "/pay/creditools";
 
         final Duration timeout = Duration.of(ferramongConfig.getPayTimeoutInSeconds(), SECONDS);
+        log.debug("chargeCreditools: requestBody={}",
+                ReflectionToStringBuilder.toString(payment, ToStringStyle.JSON_STYLE));
         webClient.post()
                 .uri(path)
                 .body(BodyInserters.fromValue(payment))
