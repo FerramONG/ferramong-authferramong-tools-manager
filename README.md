@@ -1,9 +1,9 @@
 <p align='center'>
-<img src='https://raw.githubusercontent.com/FerramONG/ferramong-tools-manager/master/docs/img/logo/logo.png?raw=true' />
+<img width="250px" src='https://raw.githubusercontent.com/FerramONG/ferramong-tools-manager/master/docs/img/logo/logo.png?raw=true' />
 </p>
 
 <h1 align='center'>FerramONG - Tools Manager</h1>
-<p align='center'>Service responsible for the authentication and registration of users, in addition, it also generates and validates session tokens.</p>
+<p align='center'>Main application service, which carries the logic of addition, rental, removal and listing of tools.</p>
 <p align="center">
 	<a href="https://github.com/FerramONG/ferramong-tools-manager/actions/workflows/windows.yml"><img src="https://github.com/FerramONG/ferramong-tools-manager/actions/workflows/windows.yml/badge.svg" alt=""></a>
 	<a href="https://github.com/FerramONG/ferramong-tools-manager/actions/workflows/macos.yml"><img src="https://github.com/FerramONG/ferramong-tools-manager/actions/workflows/macos.yml/badge.svg" alt=""></a>
@@ -15,7 +15,7 @@
 <hr />
 
 ## ❇ Introduction
-This source code is a webservice that is used to manage and manipulate the amount of credit that each user has, in addiction to adding or removing the user's credits.
+This source code is a webservice that is used to add, rent, remove or listing tools.
 
 ## ❓ How to use
 See [here](https://ferramong-tools-manager.herokuapp.com/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config) OpenAPI doc.
